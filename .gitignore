@@ -1,0 +1,24 @@
+# Dependencies
+backend/vendor/
+frontend/node_modules/
+
+# Environment
+backend/.env
+frontend/.env*
+
+# Build
+frontend/dist/
+backend/public/storage
+
+# Database
+backend/database/database.sqlite
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+backend/storage/logs/*
