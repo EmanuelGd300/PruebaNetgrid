@@ -26,11 +26,13 @@ class PokemonController extends Controller
             $typeData = $typeResponse->json();
             $pokemonUrls = collect($typeData['pokemon'])
                 ->pluck('pokemon.url')
-                ->slice($offset, $limit);
+                ->slice($offset, $limit)
+                ->toArray();
                 
+            $responses = Http::pool(fn ($pool) => array_map(fn($url) => $pool->get($url), $pokemonUrls));
+            
             $pokemonList = [];
-            foreach ($pokemonUrls as $url) {
-                $pokemonResponse = Http::get($url);
+            foreach ($responses as $pokemonResponse) {
                 if ($pokemonResponse->successful()) {
                     $pokemonData = $pokemonResponse->json();
                     $pokemonList[] = [
@@ -62,10 +64,12 @@ class PokemonController extends Controller
 
         $data = $response->json();
         
-        // Obtener detalles de cada pokémon
+        // Obtener detalles de cada pokémon en paralelo
+        $urls = array_column($data['results'], 'url');
+        $responses = Http::pool(fn ($pool) => array_map(fn($url) => $pool->get($url), $urls));
+        
         $pokemonList = [];
-        foreach ($data['results'] as $pokemon) {
-            $pokemonResponse = Http::get($pokemon['url']);
+        foreach ($responses as $pokemonResponse) {
             if ($pokemonResponse->successful()) {
                 $pokemonData = $pokemonResponse->json();
                 $pokemonList[] = [

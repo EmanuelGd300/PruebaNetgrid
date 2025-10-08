@@ -9,7 +9,8 @@
       </div>
       
       <div v-else-if="loading" class="loading">
-        Cargando favoritos...
+        <div class="pokeball-loader"></div>
+        <p>Cargando favoritos...</p>
       </div>
       
       <div v-else-if="favorites.length === 0" class="no-favorites">
@@ -47,7 +48,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'Favorites',
@@ -72,10 +73,7 @@ export default {
     async fetchFavorites() {
       this.loading = true
       try {
-        const token = localStorage.getItem('token')
-        const response = await axios.get('http://localhost:8000/api/favorites', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        const response = await axios.get('/favorites')
         this.favorites = response.data
       } catch (error) {
         console.error('Error fetching favorites:', error)
@@ -91,10 +89,7 @@ export default {
     async removeFavorite(pokemonId) {
       this.removing = pokemonId
       try {
-        const token = localStorage.getItem('token')
-        await axios.delete(`http://localhost:8000/api/favorites/${pokemonId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        await axios.delete(`/favorites/${pokemonId}`)
         this.favorites = this.favorites.filter(fav => fav.pokemon_id !== pokemonId)
       } catch (error) {
         console.error('Error removing favorite:', error)
@@ -117,42 +112,86 @@ export default {
 }
 
 .page-title {
-  color: white;
+  color: #DC0A2D;
   text-align: center;
   margin-bottom: 2rem;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
 }
 
 .auth-required, .no-favorites {
   text-align: center;
-  color: white;
+  color: #333;
   margin: 3rem 0;
 }
 
 .auth-required p, .no-favorites p {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
 .auth-btn, .browse-btn {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #3B4CCA;
   color: white;
+  border: none;
   text-decoration: none;
   border-radius: 25px;
-  transition: transform 0.3s;
+  font-weight: bold;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .auth-btn:hover, .browse-btn:hover {
   transform: translateY(-2px);
+  background: #2A3B9F;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .loading {
-  text-align: center;
-  color: white;
-  font-size: 1.2rem;
-  margin: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+}
+
+.loading p {
+  color: #DC0A2D;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.pokeball-loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #DC0A2D 50%, white 50%);
+  border: 4px solid #333;
+  position: relative;
+  animation: spin 1s linear infinite;
+}
+
+.pokeball-loader::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 4px solid #333;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .pokemon-grid {
@@ -162,29 +201,35 @@ export default {
 }
 
 .pokemon-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
+  background: white;
+  border-radius: 20px;
   padding: 1.5rem;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 3px solid #FFCB05;
+  transition: all 0.3s;
 }
 
 .pokemon-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: #DC0A2D;
 }
 
 .pokemon-image {
   width: 120px;
   height: 120px;
   object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .pokemon-name {
   margin: 1rem 0;
-  color: #333;
+  color: #DC0A2D;
   text-transform: capitalize;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .card-actions {
@@ -196,34 +241,44 @@ export default {
 
 .view-btn {
   padding: 0.5rem 1rem;
-  background: #667eea;
+  background: #3B4CCA;
   color: white;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .view-btn:hover {
-  background: #5a6fd8;
+  background: #2A3B9F;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .remove-btn {
   padding: 0.5rem 1rem;
-  background: #ff6b6b;
-  color: white;
-  border: none;
+  background: white;
+  color: #DC0A2D;
+  border: 2px solid #DC0A2D;
   border-radius: 20px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .remove-btn:hover:not(:disabled) {
-  background: #ff5252;
+  background: #DC0A2D;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .remove-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 </style>

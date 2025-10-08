@@ -12,6 +12,9 @@ class RateLimitMiddleware
     {
         $key = 'rate_limit:' . $request->ip();
         $attempts = Cache::get($key, 0);
+        
+        $maxAttempts = (int) $maxAttempts;
+        $decayMinutes = (int) $decayMinutes;
 
         if ($attempts >= $maxAttempts) {
             return response()->json([

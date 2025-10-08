@@ -2,22 +2,23 @@
   <div id="app">
     <nav class="navbar">
       <div class="nav-container">
-        <div class="nav-left">
-          <router-link to="/" class="nav-title">Pokedex</router-link>
-        </div>
+        <router-link to="/" class="nav-title">Pokédex</router-link>
+        
         <div class="search-container">
           <input 
             v-model="searchQuery" 
             @keyup.enter="searchPokemon"
-            placeholder="Buscar Pokémon..."
+            placeholder="Busca por nombre o número en la Pokédex"
             class="search-input"
           >
           <button @click="searchPokemon" class="search-btn">Buscar</button>
+          <button @click="searchRandom" class="random-btn">Aleatorio</button>
         </div>
+        
         <div class="nav-right">
           <template v-if="isAuthenticated">
+            <span class="trainer-label">Entrenador: <span class="user-name">{{ userName }}</span></span>
             <router-link to="/favorites" class="nav-link">Favoritos</router-link>
-            <span class="user-name">{{ userName }}</span>
             <button @click="logout" class="logout-btn">Cerrar Sesión</button>
           </template>
           <template v-else>
@@ -32,33 +33,52 @@
 </template>
 
 <script>
+import axios from './axios'
+
 export default {
   name: 'App',
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      isAuthenticated: false,
+      userName: ''
     }
   },
-  computed: {
-    isAuthenticated() {
-      return !!localStorage.getItem('token')
-    },
-    userName() {
-      const user = localStorage.getItem('user')
-      return user ? JSON.parse(user).name : ''
+  mounted() {
+    this.checkAuth()
+  },
+  watch: {
+    '$route'() {
+      this.checkAuth()
     }
   },
   methods: {
+    checkAuth() {
+      this.isAuthenticated = !!localStorage.getItem('token')
+      const user = localStorage.getItem('user')
+      this.userName = user ? JSON.parse(user).name : ''
+    },
     searchPokemon() {
       if (this.searchQuery.trim()) {
         this.$router.push(`/search?q=${this.searchQuery.trim()}`)
       }
     },
-    logout() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      this.$router.push('/')
-      this.$forceUpdate()
+    searchRandom() {
+      const randomId = Math.floor(Math.random() * 898) + 1
+      this.$router.push(`/pokemon/${randomId}`)
+    },
+    async logout() {
+      try {
+        await axios.post('/logout')
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error)
+      } finally {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        this.isAuthenticated = false
+        this.userName = ''
+        this.$router.push('/login')
+      }
     }
   }
 }
@@ -72,20 +92,20 @@ export default {
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #FFF8F0;
   min-height: 100vh;
 }
 
 .navbar {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: #DC0A2D;
   padding: 1rem 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-bottom: 5px solid #FFCB05;
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -94,58 +114,82 @@ body {
   gap: 2rem;
 }
 
-.nav-left, .nav-right {
+.nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
 .nav-title {
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
+  color: #FFCB05;
+  font-size: 2.5rem;
+  font-weight: 800;
   text-decoration: none;
-  transition: opacity 0.3s;
+  text-shadow: 3px 3px 0px #003A70, -1px -1px 0 #003A70, 1px -1px 0 #003A70, -1px 1px 0 #003A70, 1px 1px 0 #003A70, 2px 2px 0 #003A70;
+  transition: transform 0.3s;
+  letter-spacing: 2px;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
 }
 
 .nav-title:hover {
-  opacity: 0.8;
+  transform: scale(1.05);
 }
 
 .nav-link {
-  color: white;
+  color: #333;
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  transition: background 0.3s;
+  background: white;
+  border: none;
+  transition: all 0.3s;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #FFCB05;
+  color: #333;
+  transform: translateY(-2px);
+}
+
+.trainer-label {
+  color: white;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
 }
 
 .user-name {
-  color: white;
-  font-weight: bold;
+  color: #FFCB05;
+  font-weight: 800;
 }
 
 .logout-btn {
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+  background: white;
+  color: #333;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #FFCB05;
+  color: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .search-container {
   display: flex;
   gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
 }
 
 .search-input {
@@ -153,20 +197,55 @@ body {
   border: none;
   border-radius: 25px;
   outline: none;
-  width: 250px;
+  width: 450px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  background: white;
+  color: #333;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
+}
+
+.search-input::placeholder {
+  color: #999;
 }
 
 .search-btn {
   padding: 0.5rem 1rem;
-  background: #ff6b6b;
-  color: white;
+  background: white;
+  color: #333;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s;
 }
 
 .search-btn:hover {
-  background: #ff5252;
+  background: #FFCB05;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.random-btn {
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #333;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.random-btn:hover {
+  background: #FFCB05;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 </style>

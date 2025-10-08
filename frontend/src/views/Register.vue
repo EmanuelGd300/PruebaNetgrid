@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'Register',
@@ -123,16 +123,15 @@ export default {
           recaptcha_token: recaptchaToken
         })
 
-        localStorage.setItem('token', response.data.token)
-        localStorage.setItem('user', JSON.stringify(response.data.user))
+        localStorage.setItem('token', response.data.data.token)
+        localStorage.setItem('user', JSON.stringify(response.data.data.user))
         
-        this.$router.push('/')
+        window.location.href = '/'
       } catch (error) {
-        this.error = error.response?.data?.message || 'Error al registrarse'
+        this.error = error.response?.data?.message || error.response?.data?.errors?.email?.[0] || 'Error al registrarse'
         if (window.grecaptcha) {
           window.grecaptcha.reset()
         }
-      } finally {
         this.loading = false
       }
     }
@@ -150,10 +149,11 @@ export default {
 }
 
 .auth-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: white;
   padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 4px solid #3B4CCA;
   width: 100%;
   max-width: 400px;
 }
@@ -161,7 +161,10 @@ export default {
 .auth-card h2 {
   text-align: center;
   margin-bottom: 2rem;
-  color: #333;
+  color: #DC0A2D;
+  font-weight: bold;
+  font-size: 2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -171,15 +174,17 @@ export default {
 .form-input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
+  font-weight: 500;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #3B4CCA;
+  box-shadow: 0 0 8px rgba(59, 76, 202, 0.3);
 }
 
 .recaptcha-container {
@@ -191,18 +196,27 @@ export default {
 .auth-btn {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #FFCB05;
+  color: #333;
   border: none;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: #FFD700;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .auth-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .auth-link {
@@ -212,16 +226,25 @@ export default {
 }
 
 .auth-link a {
-  color: #667eea;
+  color: #DC0A2D;
   text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.auth-link a:hover {
+  color: #B00020;
+  text-decoration: underline;
 }
 
 .error-message {
-  background: #ff6b6b;
-  color: white;
+  background: #ffebee;
+  color: #DC0A2D;
   padding: 0.75rem;
-  border-radius: 8px;
+  border-radius: 10px;
+  border: 2px solid #DC0A2D;
   margin-top: 1rem;
   text-align: center;
+  font-weight: 600;
 }
 </style>

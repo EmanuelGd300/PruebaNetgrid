@@ -23,7 +23,7 @@ Route::get('/pokemon/{id}', [PokemonController::class, 'show']);
 Route::get('/types', [TypeController::class, 'index']);
 
 // Rutas protegidas
-Route::middleware('api.auth')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);

@@ -83,12 +83,13 @@
     </div>
   </div>
   <div v-else class="loading">
-    Cargando...
+    <div class="pokeball-loader"></div>
+    <p>Cargando Pokémon...</p>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'PokemonDetail',
@@ -122,11 +123,7 @@ export default {
     },
     async checkFavorite() {
       try {
-        const token = localStorage.getItem('token')
-        const response = await axios.get(
-          `http://localhost:8000/api/favorites/check/${this.pokemon.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        const response = await axios.get(`/favorites/check/${this.pokemon.id}`)
         this.isFavorite = response.data.is_favorite
       } catch (error) {
         console.error('Error checking favorite:', error)
@@ -136,30 +133,23 @@ export default {
       if (!this.isAuthenticated) return
       
       this.loading = true
-      const token = localStorage.getItem('token')
       
       try {
         if (this.isFavorite) {
-          await axios.delete(
-            `http://localhost:8000/api/favorites/${this.pokemon.id}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          await axios.delete(`/favorites/${this.pokemon.id}`)
           this.isFavorite = false
         } else {
-          await axios.post(
-            'http://localhost:8000/api/favorites',
-            {
-              pokemon_id: this.pokemon.id.toString(),
-              name: this.pokemon.name,
-              image: this.pokemon.image,
-              description: this.pokemon.description || ''
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          await axios.post('/favorites', {
+            pokemon_id: this.pokemon.id.toString(),
+            name: this.pokemon.name,
+            image: this.pokemon.image,
+            description: this.pokemon.description || ''
+          })
           this.isFavorite = true
         }
       } catch (error) {
         console.error('Error toggling favorite:', error)
+        alert('Error al gestionar favorito. Por favor, inicia sesión nuevamente.')
       } finally {
         this.loading = false
       }
@@ -187,10 +177,11 @@ export default {
 }
 
 .detail-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  background: white;
+  border-radius: 25px;
   padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 4px solid #DC0A2D;
 }
 
 .pokemon-header {
@@ -214,7 +205,9 @@ export default {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   text-transform: capitalize;
-  color: #333;
+  color: #DC0A2D;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
 }
 
 .pokemon-types {
@@ -253,18 +246,27 @@ export default {
 
 .favorite-btn {
   padding: 0.75rem 1.5rem;
-  border: none;
+  border: 3px solid #FFCB05;
   border-radius: 25px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: bold;
   transition: all 0.3s;
-  background: #ddd;
-  color: #666;
+  background: white;
+  color: #DC0A2D;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-btn:hover {
+  background: #FFCB05;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .favorite-btn.is-favorite {
-  background: #ff6b6b;
+  background: #DC0A2D;
   color: white;
+  border-color: #DC0A2D;
 }
 
 .pokemon-description {
@@ -273,7 +275,9 @@ export default {
 
 .pokemon-description h3 {
   margin-bottom: 1rem;
-  color: #333;
+  color: #DC0A2D;
+  font-weight: bold;
+  font-size: 1.3rem;
 }
 
 .stat-group {
@@ -282,7 +286,9 @@ export default {
 
 .stat-group h3 {
   margin-bottom: 1rem;
-  color: #333;
+  color: #DC0A2D;
+  font-weight: bold;
+  font-size: 1.3rem;
 }
 
 .basic-stats {
@@ -294,9 +300,11 @@ export default {
 .stat-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
-  background: #f5f5f5;
-  border-radius: 8px;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 2px solid #e0e0e0;
+  font-weight: 600;
 }
 
 .abilities {
@@ -307,10 +315,13 @@ export default {
 
 .ability-badge {
   padding: 0.5rem 1rem;
-  background: #667eea;
+  background: #3B4CCA;
   color: white;
-  border-radius: 15px;
+  border: none;
+  border-radius: 20px;
   text-transform: capitalize;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .stats-list {
@@ -340,8 +351,9 @@ export default {
 
 .stat-fill {
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #DC0A2D 0%, #FFCB05 100%);
   transition: width 0.3s;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .stat-number {
@@ -352,11 +364,45 @@ export default {
 
 .loading {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 50vh;
+  gap: 1rem;
+}
+
+.loading p {
+  color: #DC0A2D;
   font-size: 1.5rem;
-  color: white;
+  font-weight: bold;
+}
+
+.pokeball-loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #DC0A2D 50%, white 50%);
+  border: 4px solid #333;
+  position: relative;
+  animation: spin 1s linear infinite;
+}
+
+.pokeball-loader::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 4px solid #333;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
