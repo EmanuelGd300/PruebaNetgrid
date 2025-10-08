@@ -1,9 +1,10 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: import.meta.env.PROD 
-    ? 'https://pruebanetgrid-production.up.railway.app/api'
-    : 'http://localhost:8000/api'
+  baseURL: import.meta.env.VITE_API_URL || 
+    (import.meta.env.PROD || window.location.hostname !== 'localhost'
+      ? 'https://pruebanetgrid-production.up.railway.app/api'
+      : 'http://localhost:8000/api')
 })
 
 instance.interceptors.request.use(
