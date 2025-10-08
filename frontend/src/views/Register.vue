@@ -82,20 +82,39 @@ export default {
         this.recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
         
         if (this.recaptchaSiteKey) {
+          // Verificar si ya existe el script
+          if (document.querySelector('script[src*="recaptcha"]')) {
+            this.renderRecaptcha()
+            return
+          }
+          
           const script = document.createElement('script')
           script.src = 'https://www.google.com/recaptcha/api.js'
           script.async = true
           script.defer = true
-          document.head.appendChild(script)
           
           script.onload = () => {
-            window.grecaptcha.render(this.$refs.recaptcha, {
-              sitekey: this.recaptchaSiteKey
-            })
+            this.renderRecaptcha()
           }
+          
+          document.head.appendChild(script)
         }
       } catch (error) {
         console.error('Error loading reCAPTCHA:', error)
+      }
+    },
+    renderRecaptcha() {
+      if (window.grecaptcha && this.$refs.recaptcha) {
+        // Esperar un poco para asegurar que el DOM esté listo
+        setTimeout(() => {
+          try {
+            window.grecaptcha.render(this.$refs.recaptcha, {
+              sitekey: this.recaptchaSiteKey
+            })
+          } catch (error) {
+            console.error('Error rendering reCAPTCHA:', error)
+          }
+        }, 100)
       }
     },
     async register() {
@@ -108,12 +127,15 @@ export default {
         return
       }
       
-      // Validar reCAPTCHA
-      const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse() : ''
-      if (!recaptchaToken) {
-        this.error = 'Debes completar la verificación reCAPTCHA'
-        this.loading = false
-        return
+      // Validar reCAPTCHA solo si está disponible
+      let recaptchaToken = ''
+      if (window.grecaptcha && this.recaptchaSiteKey) {
+        recaptchaToken = window.grecaptcha.getResponse()
+        if (!recaptchaToken) {
+          this.error = 'Debes completar la verificación reCAPTCHA'
+          this.loading = false
+          return
+        }
       }
       
       try {
