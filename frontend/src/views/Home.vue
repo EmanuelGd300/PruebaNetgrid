@@ -1,6 +1,13 @@
 <template>
   <div class="home">
     <div class="container">
+      <div class="filters">
+        <select v-model="selectedType" @change="filterByType" class="type-filter">
+          <option value="">Todos los tipos</option>
+          <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </div>
+      
       <div v-if="loading" class="loading">
         <div class="pokeball-loader"></div>
         <p>Cargando Pokédex...</p>
@@ -12,6 +19,7 @@
           class="pokemon-card"
           @click="goToPokemon(pokemon.id)"
         >
+          <div class="pokemon-number">#{{ String(pokemon.id).padStart(3, '0') }}</div>
           <img :src="pokemon.image" :alt="pokemon.name" class="pokemon-image">
           <h3 class="pokemon-name">{{ pokemon.name }}</h3>
           <div class="pokemon-types">
@@ -24,6 +32,7 @@
               {{ type }}
             </span>
           </div>
+          <p class="pokemon-description" v-if="pokemon.description">{{ pokemon.description }}</p>
         </div>
       </div>
       
@@ -63,7 +72,9 @@ export default {
       limit: 20,
       totalCount: 0,
       hasNext: false,
-      hasPrevious: false
+      hasPrevious: false,
+      selectedType: '',
+      types: ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
     }
   },
   mounted() {
@@ -75,7 +86,11 @@ export default {
       window.scrollTo(0, 0)
       try {
         const page = Math.floor(this.offset / this.limit) + 1
-        const response = await axios.get(`http://localhost:8000/api/pokemon?limit=${this.limit}&page=${page}`)
+        let url = `http://localhost:8000/api/pokemon?limit=${this.limit}&page=${page}`
+        if (this.selectedType) {
+          url += `&type=${this.selectedType}`
+        }
+        const response = await axios.get(url)
         this.pokemonList = response.data.results
         this.totalCount = response.data.count
         this.hasNext = !!response.data.next
@@ -85,6 +100,10 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    filterByType() {
+      this.offset = 0
+      this.fetchPokemon()
     },
     goToPokemon(id) {
       this.$router.push(`/pokemon/${id}`)
@@ -130,6 +149,9 @@ export default {
   border: 3px solid #3B4CCA;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .pokemon-card::before {
@@ -166,13 +188,39 @@ export default {
   transform: scale(1.1) rotate(5deg);
 }
 
+.pokemon-number {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #FFCB05;
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+}
+
 .pokemon-name {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   color: #DC0A2D;
   text-transform: capitalize;
   font-size: 1.3rem;
   font-weight: bold;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.pokemon-description {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+  text-align: left;
+  max-height: 4.2em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .pokemon-types {
@@ -250,6 +298,37 @@ export default {
   padding: 0.5rem 1rem;
   border-radius: 20px;
   border: 3px solid #FFCB05;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.type-filter {
+  padding: 0.75rem 1.5rem;
+  border: 3px solid #3B4CCA;
+  border-radius: 25px;
+  background: white;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: capitalize;
+  outline: none;
+}
+
+.type-filter:hover {
+  border-color: #DC0A2D;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.type-filter:focus {
+  border-color: #FFCB05;
+  box-shadow: 0 0 10px rgba(255, 203, 5, 0.5);
 }
 
 .loading {

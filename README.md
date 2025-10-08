@@ -24,12 +24,16 @@ Una aplicación web completa que permite a los usuarios autenticarse, registrars
 
 ### Bonus Implementados
 
-- Validación con reCAPTCHA en registro y login
-- Recuperación de contraseña por correo
-- **Solo una sesión activa por usuario**: Al iniciar sesión se invalidan todos los tokens anteriores, garantizando que solo haya una sesión activa por usuario
-- Paginación en listados
-- Filtros y búsquedas avanzadas
-- Docker para despliegue
+- ✅ Validación con reCAPTCHA en registro y login
+- ✅ Recuperación de contraseña por correo
+- ✅ **Solo una sesión activa por usuario**: Al iniciar sesión se invalidan todos los tokens anteriores
+- ✅ Paginación en listados con navegación intuitiva
+- ✅ Filtros por tipo de Pokémon
+- ✅ Búsqueda por nombre o número
+- ✅ Búsqueda aleatoria de Pokémon
+- ✅ Animaciones de carga con Pokébola
+- ✅ Diseño temático de Pokédex con colores oficiales
+- ✅ Docker para despliegue
 
 ## Tecnologías Utilizadas
 
@@ -345,16 +349,23 @@ La aplicación navega inteligentemente entre diferentes endpoints de PokéAPI:
    - Se genera un nuevo `session_token` único para el usuario
    - Garantiza que solo haya una sesión activa por usuario en cualquier momento
    - Si el usuario inicia sesión desde otro dispositivo, la sesión anterior se invalida automáticamente
-4. **Paginación**: Navegación eficiente por grandes datasets
-5. **Búsqueda avanzada**: Coincidencias parciales y exactas
-6. **Filtros múltiples**: Por tipo con paginación
+4. **Paginación**: Navegación eficiente por grandes datasets con indicadores visuales
+5. **Búsqueda avanzada**: 
+   - Por nombre con coincidencias parciales y exactas
+   - Por número de Pokédex
+   - Búsqueda aleatoria para descubrir nuevos Pokémon
+6. **Filtros por tipo**: Selector desplegable con 18 tipos de Pokémon
+7. **Animaciones de carga**: Pokébola girando con mensajes contextuales
+8. **Diseño temático**: Colores oficiales de Pokémon (Rojo #DC0A2D, Amarillo #FFCB05, Azul #3B4CCA)
 
 ### Optimizaciones
 
+- **Peticiones concurrentes**: Uso de `Http::pool()` en Laravel para obtener múltiples Pokémon en paralelo
 - **Lazy loading**: Carga bajo demanda de imágenes
 - **Debounce**: En búsquedas para reducir requests
 - **Cache**: Almacenamiento temporal de tipos de Pokémon
 - **Error handling**: Manejo robusto de errores de API
+- **Scroll automático**: Al cambiar de página, scroll al inicio para mejor UX
 
 ## Docker Configuration
 
@@ -433,9 +444,11 @@ npm run test
 ## Métricas de Rendimiento
 
 - **Tiempo de carga inicial**: < 2s
+- **Carga de listado (20 Pokémon)**: ~2-3s (optimizado con peticiones concurrentes)
 - **Navegación entre páginas**: < 500ms
-- **Búsquedas**: < 1s (con debounce)
+- **Búsquedas**: < 1s
 - **Carga de imágenes**: Lazy loading implementado
+- **Filtros**: Aplicación instantánea con feedback visual
 
 ## Contribución
 

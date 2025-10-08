@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="app-wrapper">
     <nav class="navbar">
       <div class="nav-container">
         <router-link to="/" class="nav-title">Pokédex</router-link>
@@ -28,7 +28,17 @@
         </div>
       </div>
     </nav>
-    <router-view />
+    <router-view :key="$route.fullPath" />
+    <footer class="footer">
+      <div class="footer-container">
+        <p class="footer-text">
+          Desarrollado por <strong><a href="https://689f8d330b54b40008d1d849--emanuel-gomez-diaz.netlify.app/" target="_blank" rel="noopener" class="dev-link">Emanuel Gómez Díaz</a></strong> | Prueba Técnica para <strong>NetGrid</strong>
+        </p>
+        <p class="footer-subtext">
+          Datos obtenidos de <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a>
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -95,6 +105,24 @@ body {
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #FFF8F0;
   min-height: 100vh;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-wrapper > .navbar {
+  flex-shrink: 0;
+}
+
+.app-wrapper > * {
+  flex-shrink: 0;
+}
+
+.app-wrapper > .footer {
+  margin-top: auto;
 }
 
 .navbar {
@@ -247,5 +275,59 @@ body {
   background: #FFCB05;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.footer {
+  background: #DC0A2D;
+  padding: 1.5rem 0;
+  border-top: 5px solid #FFCB05;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.footer-text {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-text strong {
+  color: #FFCB05;
+}
+
+.footer-subtext {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.footer-subtext a {
+  color: #FFCB05;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.footer-subtext a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.dev-link {
+  color: #FFCB05;
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.dev-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 </style>

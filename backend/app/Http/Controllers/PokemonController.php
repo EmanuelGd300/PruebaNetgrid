@@ -69,16 +69,43 @@ class PokemonController extends Controller
         $responses = Http::pool(fn ($pool) => array_map(fn($url) => $pool->get($url), $urls));
         
         $pokemonList = [];
+        $speciesUrls = [];
+        
         foreach ($responses as $pokemonResponse) {
             if ($pokemonResponse->successful()) {
                 $pokemonData = $pokemonResponse->json();
+                $speciesUrls[] = $pokemonData['species']['url'];
                 $pokemonList[] = [
                     'id' => $pokemonData['id'],
                     'name' => $pokemonData['name'],
                     'image' => $pokemonData['sprites']['front_default'],
                     'types' => array_map(fn($type) => $type['type']['name'], $pokemonData['types']),
+                    'species_url' => $pokemonData['species']['url'],
                 ];
             }
+        }
+        
+        // Obtener descripciones en paralelo
+        $speciesResponses = Http::pool(fn ($pool) => array_map(fn($url) => $pool->get($url), $speciesUrls));
+        
+        foreach ($pokemonList as $index => $pokemon) {
+            $description = '';
+            if (isset($speciesResponses[$index]) && $speciesResponses[$index]->successful()) {
+                $species = $speciesResponses[$index]->json();
+                $flavorTexts = collect($species['flavor_text_entries'])
+                    ->where('language.name', 'es')
+                    ->first();
+                
+                if (!$flavorTexts) {
+                    $flavorTexts = collect($species['flavor_text_entries'])
+                        ->where('language.name', 'en')
+                        ->first();
+                }
+                
+                $description = $flavorTexts ? str_replace(["\n", "\f"], ' ', $flavorTexts['flavor_text']) : '';
+            }
+            $pokemonList[$index]['description'] = $description;
+            unset($pokemonList[$index]['species_url']);
         }
 
         return response()->json([

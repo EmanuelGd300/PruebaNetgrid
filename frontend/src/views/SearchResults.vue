@@ -21,6 +21,7 @@
           class="pokemon-card"
           @click="goToPokemon(pokemon.id)"
         >
+          <div class="pokemon-number">#{{ String(pokemon.id).padStart(3, '0') }}</div>
           <img :src="pokemon.image" :alt="pokemon.name" class="pokemon-image">
           <h3 class="pokemon-name">{{ pokemon.name }}</h3>
           <div class="pokemon-types">
@@ -169,6 +170,7 @@ export default {
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 3px solid #3B4CCA;
+  position: relative;
 }
 
 .pokemon-card:hover {
@@ -182,6 +184,19 @@ export default {
   height: 120px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.pokemon-number {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #FFCB05;
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .pokemon-name {

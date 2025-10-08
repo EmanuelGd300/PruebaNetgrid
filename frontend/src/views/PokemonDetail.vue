@@ -21,7 +21,8 @@
               :class="['favorite-btn', { 'is-favorite': isFavorite }]"
               v-if="isAuthenticated"
             >
-              {{ isFavorite ? '❤️ Quitar de favoritos' : '🤍 Agregar a favoritos' }}
+              <span class="pokeball-icon">{{ isFavorite ? '⚫' : '⚪' }}</span>
+              {{ isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
             </button>
           </div>
         </div>
@@ -251,10 +252,15 @@ export default {
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
+  font-family: 'Poppins', sans-serif;
   transition: all 0.3s;
   background: white;
   color: #DC0A2D;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .favorite-btn:hover {
@@ -267,6 +273,26 @@ export default {
   background: #DC0A2D;
   color: white;
   border-color: #DC0A2D;
+}
+
+.pokeball-icon {
+  font-size: 1.5rem;
+  display: inline-block;
+  animation: bounce 0.5s ease;
+}
+
+.favorite-btn:hover .pokeball-icon {
+  animation: spin 0.5s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .pokemon-description {
