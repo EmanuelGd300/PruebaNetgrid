@@ -195,9 +195,9 @@ docker-compose exec backend php artisan db:seed
 
 ### Backend (.env)
 
-**IMPORTANTE**: El archivo `.env.example` ya viene configurado con valores por defecto que funcionan inmediatamente. Solo necesitas copiarlo a `.env` y generar la clave de aplicación.
+**IMPORTANTE**: El archivo `.env` es **OBLIGATORIO** para que la aplicación funcione. Debes copiarlo desde `.env.example` y configurar la clave de aplicación.
 
-#### Configuración Mínima (Funciona sin cambios)
+#### Configuración Mínima (REQUERIDA)
 
 ```bash
 cd backend
@@ -205,15 +205,15 @@ copy .env.example .env
 php artisan key:generate
 ```
 
-Esto es suficiente para que la aplicación funcione con:
+**Sin este archivo .env, la aplicación NO funcionará.** Una vez configurado, tendrás:
 - Base de datos SQLite (se crea automáticamente)
 - Autenticación completa
 - CRUD de favoritos
-- Todas las funcionalidades excepto reCAPTCHA y recuperación de contraseña
+- Todas las funcionalidades básicas
 
-#### Configuración Completa (Opcional)
+#### Configuración Completa (Para funciones adicionales)
 
-Si deseas habilitar reCAPTCHA y recuperación de contraseña, ajusta estos valores:
+Para habilitar reCAPTCHA y recuperación de contraseña, ajusta estos valores en tu archivo `.env`:
 
 ```env
 # Aplicación
@@ -319,14 +319,20 @@ Busca una línea como: `Password reset token for email@example.com: abc123...`
 
 ### Frontend (.env)
 
-El frontend utiliza variables de entorno para la configuración de la API. Ya viene configurado por defecto, pero puedes personalizarlo:
+El frontend **REQUIERE** variables de entorno para funcionar correctamente. Los archivos `.env` y `.env.production` ya están configurados.
 
-#### Configuración por Defecto
+#### Configuración por Defecto (YA CONFIGURADA)
 
-El archivo `.env` ya existe con la configuración necesaria:
+Los archivos `.env` y `.env.production` ya existen con la configuración necesaria:
 
 ```env
+# .env (desarrollo)
 VITE_API_URL=http://localhost:8000/api
+VITE_RECAPTCHA_SITE_KEY=6LeCJuIrAAAAAOQ43ovI-5f-LUhH_JPm3Uc7gmin
+
+# .env.production (producción)
+VITE_API_URL=https://pruebanetgrid-production.up.railway.app/api
+VITE_RECAPTCHA_SITE_KEY=6LeCJuIrAAAAAOQ43ovI-5f-LUhH_JPm3Uc7gmin
 ```
 
 #### Configuración Personalizada

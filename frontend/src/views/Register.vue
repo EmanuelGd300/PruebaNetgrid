@@ -79,8 +79,7 @@ export default {
   methods: {
     async loadRecaptcha() {
       try {
-        const response = await axios.get('/recaptcha-site-key')
-        this.recaptchaSiteKey = response.data.site_key
+        this.recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
         
         if (this.recaptchaSiteKey) {
           const script = document.createElement('script')
