@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: import.meta.env.PROD 
+    ? 'https://pruebanetgrid-production.up.railway.app/api'
+    : 'http://localhost:8000/api'
 })
 
 instance.interceptors.request.use(

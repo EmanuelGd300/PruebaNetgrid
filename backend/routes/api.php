@@ -22,6 +22,17 @@ Route::get('/pokemon/search', [PokemonController::class, 'search']);
 Route::get('/pokemon/{id}', [PokemonController::class, 'show']);
 Route::get('/types', [TypeController::class, 'index']);
 
+// Health check
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'Pokemon API is running',
+        'timestamp' => now()->toISOString(),
+        'database' => 'sqlite',
+        'version' => '1.0.0'
+    ]);
+});
+
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticación
