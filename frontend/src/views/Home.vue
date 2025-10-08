@@ -133,7 +133,7 @@ export default {
 
 .pokemon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
 }
@@ -151,6 +151,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -177,15 +178,16 @@ export default {
 }
 
 .pokemon-image {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   transition: transform 0.3s;
+  margin: 0 auto;
 }
 
 .pokemon-card:hover .pokemon-image {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.15) rotate(5deg);
 }
 
 .pokemon-number {
@@ -215,12 +217,13 @@ export default {
   color: #666;
   line-height: 1.4;
   margin-top: 0.5rem;
-  text-align: left;
+  text-align: center;
   max-height: 4.2em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  width: 100%;
 }
 
 .pokemon-types {

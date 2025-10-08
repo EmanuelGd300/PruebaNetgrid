@@ -196,7 +196,7 @@ export default {
 
 .pokemon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
 }
 
@@ -208,6 +208,9 @@ export default {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 3px solid #FFCB05;
   transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .pokemon-card:hover {
@@ -217,10 +220,11 @@ export default {
 }
 
 .pokemon-image {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  margin: 0 auto;
 }
 
 .pokemon-name {
