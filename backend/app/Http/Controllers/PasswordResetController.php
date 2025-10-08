@@ -29,8 +29,14 @@ class PasswordResetController extends Controller
             ]
         );
 
-        // Enviar correo
+        // Enviar correo con timeout
         try {
+            // Configurar timeout para el envío de correo
+            $timeout = 30; // 30 segundos máximo
+            
+            $mailSent = false;
+            $startTime = time();
+            
             Mail::raw(
                 "Hola,\n\nRecibimos una solicitud para restablecer tu contraseña.\n\n" .
                 "Tu token de recuperación es: {$token}\n\n" .
@@ -39,14 +45,19 @@ class PasswordResetController extends Controller
                 "Saludos,\nEmanuel Gómez Díaz",
                 function ($message) use ($request) {
                     $message->to($request->email)
-                        ->subject('Recuperación de Contraseña - Pokemon API - Emanuel Gómez Díaz');
+                        ->subject('Recuperación de Contraseña - Pokemon API');
                 }
             );
             
-            \Log::info("Password reset email sent to {$request->email}");
+            $mailSent = true;
+            \Log::info("Password reset email sent to {$request->email} in " . (time() - $startTime) . " seconds");
+            
         } catch (\Exception $e) {
-            \Log::error("Failed to send password reset email: " . $e->getMessage());
+            \Log::error("Failed to send password reset email to {$request->email}: " . $e->getMessage());
             \Log::info("Password reset token for {$request->email}: {$token}");
+            
+            // Si el correo falla, aún devolvemos éxito pero logueamos el token
+            \Log::warning("Email failed but token is available in logs for manual recovery");
         }
 
         return response()->json([

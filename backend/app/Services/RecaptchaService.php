@@ -15,22 +15,32 @@ class RecaptchaService
 
     public function verify($token, $ip = null)
     {
-        if (!$this->secretKey) {
+        if (!$this->secretKey || empty($token)) {
             return false;
         }
 
-        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => $this->secretKey,
-            'response' => $token,
-            'remoteip' => $ip,
-        ]);
+        try {
+            $response = Http::timeout(10)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => $this->secretKey,
+                'response' => $token,
+                'remoteip' => $ip,
+            ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                \Log::error('reCAPTCHA API request failed', ['status' => $response->status()]);
+                return false;
+            }
+
+            $data = $response->json();
+            
+            if (!($data['success'] ?? false)) {
+                \Log::warning('reCAPTCHA verification failed', ['errors' => $data['error-codes'] ?? []]);
+            }
+            
+            return $data['success'] ?? false;
+        } catch (\Exception $e) {
+            \Log::error('reCAPTCHA verification exception', ['error' => $e->getMessage()]);
             return false;
         }
-
-        $data = $response->json();
-        
-        return $data['success'] ?? false;
     }
 }

@@ -108,9 +108,15 @@ export default {
         return
       }
       
+      // Validar reCAPTCHA
+      const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse() : ''
+      if (!recaptchaToken) {
+        this.error = 'Debes completar la verificación reCAPTCHA'
+        this.loading = false
+        return
+      }
+      
       try {
-        const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse() : ''
-
         const response = await axios.post('/register', {
           ...this.form,
           recaptcha_token: recaptchaToken
