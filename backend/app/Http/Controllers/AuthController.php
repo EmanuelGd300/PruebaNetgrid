@@ -18,15 +18,17 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'recaptcha_token' => 'required|string',
+            'recaptcha_token' => 'nullable|string',
         ]);
 
-        // Validar reCAPTCHA
-        $recaptchaService = new RecaptchaService();
-        if (!$recaptchaService->verify($request->recaptcha_token, $request->ip())) {
-            throw ValidationException::withMessages([
-                'recaptcha_token' => ['La verificación reCAPTCHA falló. Inténtalo de nuevo.'],
-            ]);
+        // Validar reCAPTCHA solo si está configurado
+        if (env('RECAPTCHA_SECRET_KEY') && $request->recaptcha_token) {
+            $recaptchaService = new RecaptchaService();
+            if (!$recaptchaService->verify($request->recaptcha_token, $request->ip())) {
+                throw ValidationException::withMessages([
+                    'recaptcha_token' => ['La verificación reCAPTCHA falló. Inténtalo de nuevo.'],
+                ]);
+            }
         }
 
         $sessionToken = Str::random(60);
@@ -56,15 +58,17 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'recaptcha_token' => 'required|string',
+            'recaptcha_token' => 'nullable|string',
         ]);
 
-        // Validar reCAPTCHA
-        $recaptchaService = new RecaptchaService();
-        if (!$recaptchaService->verify($request->recaptcha_token, $request->ip())) {
-            throw ValidationException::withMessages([
-                'recaptcha_token' => ['La verificación reCAPTCHA falló. Inténtalo de nuevo.'],
-            ]);
+        // Validar reCAPTCHA solo si está configurado
+        if (env('RECAPTCHA_SECRET_KEY') && $request->recaptcha_token) {
+            $recaptchaService = new RecaptchaService();
+            if (!$recaptchaService->verify($request->recaptcha_token, $request->ip())) {
+                throw ValidationException::withMessages([
+                    'recaptcha_token' => ['La verificación reCAPTCHA falló. Inténtalo de nuevo.'],
+                ]);
+            }
         }
 
         $user = User::where('email', $request->email)->first();

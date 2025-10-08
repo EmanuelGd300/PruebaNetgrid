@@ -88,12 +88,8 @@ export default {
           email: this.email
         })
         
-        this.message = response.data.message
+        this.message = response.data.message + ' Revisa tu correo para obtener el token.'
         this.tokenSent = true
-        // Para pruebas, mostrar el token
-        if (response.data.token) {
-          this.token = response.data.token
-        }
       } catch (error) {
         this.error = error.response?.data?.message || 'Error al enviar el enlace'
       } finally {

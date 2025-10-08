@@ -85,12 +85,6 @@ export default {
       
       try {
         const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse() : ''
-        
-        if (!recaptchaToken) {
-          this.error = 'Por favor completa la verificación reCAPTCHA'
-          this.loading = false
-          return
-        }
 
         const response = await axios.post('http://localhost:8000/api/login', {
           ...this.form,
@@ -102,7 +96,14 @@ export default {
         
         window.location.href = '/'
       } catch (error) {
-        this.error = error.response?.data?.message || error.response?.data?.errors?.email?.[0] || 'Error al iniciar sesión'
+        const errors = error.response?.data?.errors
+        if (errors?.email) {
+          this.error = errors.email[0]
+        } else if (errors?.password) {
+          this.error = errors.password[0]
+        } else {
+          this.error = error.response?.data?.message || 'Error al iniciar sesión'
+        }
         if (window.grecaptcha) {
           window.grecaptcha.reset()
         }

@@ -29,12 +29,28 @@ class PasswordResetController extends Controller
             ]
         );
 
-        // Simular envío de email (en producción usar Mail::send)
-        \Log::info("Password reset token for {$request->email}: {$token}");
+        // Enviar correo
+        try {
+            Mail::raw(
+                "Hola,\n\nRecibimos una solicitud para restablecer tu contraseña.\n\n" .
+                "Tu token de recuperación es: {$token}\n\n" .
+                "Ingresa este token en la página de recuperación de contraseña.\n\n" .
+                "Si no solicitaste este cambio, ignora este correo.\n\n" .
+                "Saludos,\nEmanuel Gómez Díaz",
+                function ($message) use ($request) {
+                    $message->to($request->email)
+                        ->subject('Recuperación de Contraseña - Pokemon API - Emanuel Gómez Díaz');
+                }
+            );
+            
+            \Log::info("Password reset email sent to {$request->email}");
+        } catch (\Exception $e) {
+            \Log::error("Failed to send password reset email: " . $e->getMessage());
+            \Log::info("Password reset token for {$request->email}: {$token}");
+        }
 
         return response()->json([
-            'message' => 'Se ha enviado un enlace de recuperación a tu correo electrónico.',
-            'token' => $token // Solo para pruebas, remover en producción
+            'message' => 'Se ha enviado un enlace de recuperación a tu correo electrónico.'
         ]);
     }
 
