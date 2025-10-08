@@ -146,6 +146,9 @@ cd frontend
 # Instalar dependencias de Node.js
 npm install
 
+# Generar archivo de entorno local (opcional)
+npm run env:local
+
 # Iniciar servidor de desarrollo
 npm run dev
 # El frontend estará disponible en http://localhost:3000
@@ -314,13 +317,44 @@ tail -f storage/logs/laravel.log
 
 Busca una línea como: `Password reset token for email@example.com: abc123...`
 
-### Frontend
+### Frontend (.env)
 
-No requiere archivo `.env` adicional. La URL del backend está configurada en `src/axios.js`:
+El frontend utiliza variables de entorno para la configuración de la API. Ya viene configurado por defecto, pero puedes personalizarlo:
 
-```javascript
-baseURL: 'http://localhost:8000/api'
+#### Configuración por Defecto
+
+El archivo `.env` ya existe con la configuración necesaria:
+
+```env
+VITE_API_URL=http://localhost:8000/api
 ```
+
+#### Configuración Personalizada
+
+Si necesitas una configuración diferente, puedes:
+
+**Opción 1: Generar archivo local**
+```bash
+cd frontend
+npm run env:local
+```
+
+**Opción 2: Copiar desde ejemplo**
+```bash
+cd frontend
+copy .env.example .env.local
+# En Linux/Mac: cp .env.example .env.local
+```
+
+Luego edita `.env.local` según tus necesidades:
+
+```env
+# .env.local - Configuración local personalizada
+VITE_API_URL=http://localhost:8000/api
+# VITE_API_URL=http://tu-servidor:puerto/api  # Para usar otro servidor
+```
+
+**Nota**: Los archivos `.env.local` tienen prioridad sobre `.env` y no se suben al repositorio.
 
 ## 👤 Usuario de Prueba
 

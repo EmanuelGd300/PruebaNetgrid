@@ -115,7 +115,7 @@ export default {
   methods: {
     async fetchPokemon() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/pokemon/${this.$route.params.id}`)
+        const response = await axios.get(`/pokemon/${this.$route.params.id}`)
         this.pokemon = response.data
       } catch (error) {
         console.error('Error fetching pokemon:', error)

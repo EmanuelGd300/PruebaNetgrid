@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "env:local": "echo VITE_API_URL=http://localhost:8000/api > .env.local && echo Archivo .env.local creado exitosamente"
   },
   "dependencies": {
     "vue": "^3.3.4",

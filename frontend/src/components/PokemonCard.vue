@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'PokemonCard',
@@ -69,10 +69,7 @@ export default {
     async checkFavorite() {
       try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(
-          `http://localhost:8000/api/favorites/check/${this.pokemon.id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
+        const response = await axios.get(`/favorites/check/${this.pokemon.id}`)
         this.isFavorite = response.data.is_favorite
       } catch (error) {
         console.error('Error checking favorite:', error)
@@ -81,26 +78,17 @@ export default {
     async toggleFavorite() {
       if (!this.isAuthenticated) return
       
-      const token = localStorage.getItem('token')
-      
       try {
         if (this.isFavorite) {
-          await axios.delete(
-            `http://localhost:8000/api/favorites/${this.pokemon.id}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          await axios.delete(`/favorites/${this.pokemon.id}`)
           this.isFavorite = false
         } else {
-          await axios.post(
-            'http://localhost:8000/api/favorites',
-            {
-              pokemon_id: this.pokemon.id.toString(),
-              name: this.pokemon.name,
-              image: this.pokemon.image,
-              description: this.pokemon.description || ''
-            },
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          await axios.post('/favorites', {
+            pokemon_id: this.pokemon.id.toString(),
+            name: this.pokemon.name,
+            image: this.pokemon.image,
+            description: this.pokemon.description || ''
+          })
           this.isFavorite = true
         }
         this.$emit('favorite-changed', { pokemon: this.pokemon, isFavorite: this.isFavorite })

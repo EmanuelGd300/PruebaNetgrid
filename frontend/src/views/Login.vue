@@ -59,7 +59,7 @@ export default {
   methods: {
     async loadRecaptcha() {
       try {
-        const response = await axios.get('http://localhost:8000/api/recaptcha-site-key')
+        const response = await axios.get('/recaptcha-site-key')
         this.recaptchaSiteKey = response.data.site_key
         
         if (this.recaptchaSiteKey) {
@@ -86,7 +86,7 @@ export default {
       try {
         const recaptchaToken = window.grecaptcha ? window.grecaptcha.getResponse() : ''
 
-        const response = await axios.post('http://localhost:8000/api/login', {
+        const response = await axios.post('/login', {
           ...this.form,
           recaptcha_token: recaptchaToken
         })

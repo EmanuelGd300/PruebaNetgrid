@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import api from '@/axios'
 import PokemonCard from '@/components/PokemonCard.vue'
 
 export default {
@@ -100,7 +100,7 @@ export default {
     async fetchPokemon() {
       this.loading = true
       try {
-        const response = await axios.get(`http://localhost:8000/api/pokemon?page=${this.page}&limit=20`)
+        const response = await api.get(`/pokemon?page=${this.page}&limit=20`)
         this.pokemon = [...this.pokemon, ...response.data.results]
       } catch (error) {
         console.error('Error fetching pokemon:', error)

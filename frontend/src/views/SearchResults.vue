@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'SearchResults',
@@ -70,7 +70,7 @@ export default {
     async searchPokemon() {
       this.loading = true
       try {
-        const response = await axios.get(`http://localhost:8000/api/pokemon/search?q=${this.searchQuery}`)
+        const response = await axios.get(`/pokemon/search?q=${this.searchQuery}`)
         this.pokemonList = response.data.results || []
       } catch (error) {
         console.error('Error searching pokemon:', error)

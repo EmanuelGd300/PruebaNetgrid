@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'ForgotPassword',
@@ -84,7 +84,7 @@ export default {
       this.error = ''
       
       try {
-        const response = await axios.post('http://localhost:8000/api/password/email', {
+        const response = await axios.post('/password/email', {
           email: this.email
         })
         
@@ -107,7 +107,7 @@ export default {
       }
       
       try {
-        const response = await axios.post('http://localhost:8000/api/password/reset', {
+        const response = await axios.post('/password/reset', {
           email: this.email,
           token: this.token,
           password: this.password,

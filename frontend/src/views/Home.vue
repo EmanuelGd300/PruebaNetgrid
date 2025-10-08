@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from '../axios'
 
 export default {
   name: 'Home',
@@ -86,7 +86,7 @@ export default {
       window.scrollTo(0, 0)
       try {
         const page = Math.floor(this.offset / this.limit) + 1
-        let url = `http://localhost:8000/api/pokemon?limit=${this.limit}&page=${page}`
+        let url = `/pokemon?limit=${this.limit}&page=${page}`
         if (this.selectedType) {
           url += `&type=${this.selectedType}`
         }
