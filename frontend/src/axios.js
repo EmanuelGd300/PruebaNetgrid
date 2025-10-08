@@ -1,10 +1,13 @@
 import axios from 'axios'
 
+// Debug: mostrar qué URL se está usando
+const apiURL = import.meta.env.VITE_API_URL || 'https://pruebanetgrid-production.up.railway.app/api'
+console.log('API URL:', apiURL)
+console.log('Environment:', import.meta.env.MODE)
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL)
+
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 
-    (import.meta.env.PROD || window.location.hostname !== 'localhost'
-      ? 'https://pruebanetgrid-production.up.railway.app/api'
-      : 'http://localhost:8000/api')
+  baseURL: apiURL
 })
 
 instance.interceptors.request.use(
