@@ -29,13 +29,15 @@ class PasswordResetController extends Controller
             ]
         );
 
-        // Enviar correo con timeout
+        // Intentar enviar correo
+        $mailSent = false;
+        $startTime = time();
+        
         try {
-            // Configurar timeout para el envío de correo
-            $timeout = 30; // 30 segundos máximo
-            
-            $mailSent = false;
-            $startTime = time();
+            // Verificar configuración de correo
+            if (!env('MAIL_USERNAME') || !env('MAIL_PASSWORD')) {
+                throw new \Exception('Mail credentials not configured');
+            }
             
             Mail::raw(
                 "Hola,\n\nRecibimos una solicitud para restablecer tu contraseña.\n\n" .
@@ -50,15 +52,19 @@ class PasswordResetController extends Controller
             );
             
             $mailSent = true;
-            \Log::info("Password reset email sent to {$request->email} in " . (time() - $startTime) . " seconds");
+            \Log::info("Password reset email sent successfully to {$request->email} in " . (time() - $startTime) . " seconds");
             
         } catch (\Exception $e) {
             \Log::error("Failed to send password reset email to {$request->email}: " . $e->getMessage());
-            \Log::info("Password reset token for {$request->email}: {$token}");
-            
-            // Si el correo falla, aún devolvemos éxito pero logueamos el token
-            \Log::warning("Email failed but token is available in logs for manual recovery");
+            \Log::error("Mail configuration - Host: " . env('MAIL_HOST') . ", Port: " . env('MAIL_PORT') . ", Username: " . env('MAIL_USERNAME'));
         }
+        
+        // SIEMPRE loguear el token para recuperación manual
+        \Log::info("=== PASSWORD RESET TOKEN ===");
+        \Log::info("Email: {$request->email}");
+        \Log::info("Token: {$token}");
+        \Log::info("Mail sent: " . ($mailSent ? 'YES' : 'NO'));
+        \Log::info("===========================");
 
         return response()->json([
             'message' => 'Se ha enviado un enlace de recuperación a tu correo electrónico.'
